@@ -1,5 +1,6 @@
 var path = require('path')
 var fs = require('hexo-fs')
+var file = require('fs');
 var yml = require('js-yaml')
 var deepAssign = require('deep-assign')
 var extend = require('extend')
@@ -155,6 +156,8 @@ module.exports = function (app, hexo) {
     res.done(getSettings())
   });
 
+  
+
   use('settings/set', function (req, res, next) {
     if (req.method !== 'POST') return next()
     if (!req.body.name) {
@@ -195,6 +198,33 @@ module.exports = function (app, hexo) {
       updated: 'Successfully updated ' + name + ' = ' + value,
       settings: settings
     })
+  });
+  
+  use('config/get', function(req, res){
+    var hexoConfigPath = hexo.config_path;
+    var hexoConfig = file.readFileSync(hexoConfigPath, 'utf8');
+
+    var themeConfigPath = hexo.theme_dir + '_config.yml';
+    var themeConfig = file.readFileSync(themeConfigPath, 'utf8');
+    res.done({
+      hexoConfig,
+      themeConfig
+    });
+  });
+
+  use('config/save', function(req, res){
+    var hexoConfig = req.body.hexoConfig;
+    var themeConfig = req.body.themeConfig;
+
+    var hexoConfigPath = hexo.config_path;
+    var themeConfigPath = hexo.theme_dir + '_config.yml';
+    file.writeFileSync(hexoConfigPath, hexoConfig, 'utf8');
+    file.writeFileSync(themeConfigPath, themeConfig, 'utf8');
+
+    res.done({
+      hexoConfig,
+      themeConfig
+    });
   });
 
   use('pages/list', function (req, res) {
