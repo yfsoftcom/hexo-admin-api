@@ -7,8 +7,8 @@ var extend = require('extend')
 var updateAny = require('./update')
   , updatePage = updateAny.bind(null, 'Page')
   , update = updateAny.bind(null, 'Post')
-//   , deploy = require('./deploy')
-// var upload = require('./upload');
+  , deploy = require('./deploy')
+  , upload = require('./upload');
 module.exports = function (app, hexo) {
 
   var qiniu ;
@@ -199,33 +199,29 @@ module.exports = function (app, hexo) {
       settings: settings
     })
   });
+
+  function config(scope, req, res){
+    var configPath = scope == 'hexo'? hexo.config_path : hexo.theme_dir + '_config.yml';
+    var config;
+    if(req.method === 'POST'){
+      config = req.body.config;
+      file.writeFileSync(configPath, config, 'utf8');
+    }else{
+      config = file.readFileSync(configPath, 'utf8');
+    }
+    res.done({
+      config: config
+    });
+  }
   
-  use('config/get', function(req, res){
-    var hexoConfigPath = hexo.config_path;
-    var hexoConfig = file.readFileSync(hexoConfigPath, 'utf8');
-
-    var themeConfigPath = hexo.theme_dir + '_config.yml';
-    var themeConfig = file.readFileSync(themeConfigPath, 'utf8');
-    res.done({
-      hexoConfig,
-      themeConfig
-    });
+  use('config/hexo', function(req, res){
+    config('hexo', req, res) 
   });
 
-  use('config/save', function(req, res){
-    var hexoConfig = req.body.hexoConfig;
-    var themeConfig = req.body.themeConfig;
-
-    var hexoConfigPath = hexo.config_path;
-    var themeConfigPath = hexo.theme_dir + '_config.yml';
-    file.writeFileSync(hexoConfigPath, hexoConfig, 'utf8');
-    file.writeFileSync(themeConfigPath, themeConfig, 'utf8');
-
-    res.done({
-      hexoConfig,
-      themeConfig
-    });
+  use('config/theme', function(req, res){
+    config('theme', req, res) 
   });
+
 
   use('pages/list', function (req, res) {
    var page = hexo.model('Page')
@@ -449,15 +445,11 @@ module.exports = function (app, hexo) {
 
   });
 
-/*
+
   use('deploy', function(req, res, next) {
     if (req.method !== 'POST') return next()
-    if (!hexo.config.admin || !hexo.config.admin.deployCommand) {
-      return res.done({error: 'Config value "admin.deployCommand" not found'});
-    }
     try {
-      deploy(hexo.config.admin.deployCommand, req.body.message, function(err, result) {
-        console.log('res', err, result);
+      deploy('argument', function(err, result) {
         if (err) {
           return res.done({error: err.message || err})
         }
@@ -468,5 +460,4 @@ module.exports = function (app, hexo) {
       res.done({error: e.message})
     }
   });
-  //*/
 }
