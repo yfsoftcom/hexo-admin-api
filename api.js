@@ -11,6 +11,7 @@ var updateAny = require('./update')
   , upload = require('./upload');
 module.exports = function (app, hexo) {
 
+  var appkey = hexo.config.appkey;
   var qiniu ;
   if(hexo.config.qiniu){
     qiniu = upload(hexo.config.qiniu)
@@ -122,6 +123,11 @@ module.exports = function (app, hexo) {
 
   var use = function (path, fn) {
     app.use(hexo.config.root + 'admin/api/' + path, function (req, res) {
+      if(req.headers.appkey != appkey != null){
+        //appkey错误，无法访问
+        res.statusCode = 205;
+        return res.end('');
+      }
       var done = function (val) {
         if (!val) {
           res.statusCode = 204
