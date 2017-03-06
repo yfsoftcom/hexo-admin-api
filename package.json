@@ -1,0 +1,39 @@
+{
+  "name": "hexo-admin-api",
+  "version": "1.0.0",
+  "description": "hexo-admin-api",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.5.0",
+    "deep-assign": "^2.0.0",
+    "express-session": "^1.10.3",
+    "extend": "^3.0.0",
+    "hexo-front-matter": "^0.2.2",
+    "hexo-fs": "^0.1.3",
+    "hexo-util": "^0.1.6",
+    "less": "^2.5.1",
+    "moment": "^2.7.0"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "start": "node start.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yfsoftcom/yf-ci-web-react.git"
+  },
+  "keywords": [
+    "yf",
+    "ci",
+    "web",
+    "react"
+  ],
+  "author": "wangfan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yfsoftcom/yf-ci-web-react/issues"
+  },
+  "homepage": "https://github.com/yfsoftcom/yf-ci-web-react#readme"
+}
